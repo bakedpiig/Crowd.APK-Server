@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChessCrush.Game
+namespace Crowd.Game
 {
     public class OutputMemoryStream
     {
