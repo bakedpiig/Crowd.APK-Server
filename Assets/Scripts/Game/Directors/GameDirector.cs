@@ -10,7 +10,7 @@ namespace Crowd.Game
 {
     public class GameDirector : SubDirector
     {
-        private TcpListener listener = new TcpListener(IPAddress.Any, 1935);
+        private TcpListener listener = new TcpListener(IPAddress.Parse("192.168.137.23"), 1935);
         private TcpClient[] clients = new TcpClient[10];
         private ReactiveProperty<bool[]> Ready = new ReactiveProperty<bool[]>();
         private int clientCount = 0;
@@ -20,7 +20,7 @@ namespace Crowd.Game
             Application.runInBackground = true;
             Application.targetFrameRate = 60;
 
-            Debug.Log($"Server opened: {((IPEndPoint)listener.LocalEndpoint).Address}");
+            Debug.Log($"Server opened: {IPAddress.Any}");
             Ready.Value = new bool[10];
             Ready.Where(arr => arr.All(_ => _)).Subscribe(_ => ClientReady()).AddTo(gameObject);
 

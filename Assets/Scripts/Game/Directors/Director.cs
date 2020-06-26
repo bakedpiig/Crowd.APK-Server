@@ -16,7 +16,7 @@ namespace Crowd.Game
             instance = this;
             DontDestroyOnLoad(gameObject);
 
-            directorsPool = (Resources.Load("Prefabs/DirectorsPool") as GameObject).GetComponent<DirectorsPool>();
+            directorsPool = Instantiate(Resources.Load("Prefabs/DirectorsPool") as GameObject).GetComponent<DirectorsPool>();
         }
 
         private void Start()
