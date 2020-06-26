@@ -1,4 +1,4 @@
 ﻿namespace Crowd.Game.Network
 {
-    public enum RequireType { EnterRoom, SendData, Disconnect }
+    public enum RequireType { Ready, SendData, Disconnect }
 }
