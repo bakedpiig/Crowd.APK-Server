@@ -1,5 +1,5 @@
 ﻿using Crowd.Game.Network;
-using SuperSocket.ClientEngine;
+using System.Collections;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -10,9 +10,10 @@ namespace Crowd.Game
 {
     public class GameDirector : SubDirector
     {
-        private TcpListener listener = new TcpListener(IPAddress.Parse("192.168.137.23"), 1935);
+        private TcpListener listener = new TcpListener(IPAddress.Any, 1935);
         private TcpClient[] clients = new TcpClient[10];
-        private ReactiveProperty<bool[]> Ready = new ReactiveProperty<bool[]>();
+        private Player[] players = new Player[10];
+        private ReactiveProperty<BitArray> Ready = new ReactiveProperty<BitArray>();
         private int clientCount = 0;
 
         private void Awake()
@@ -21,8 +22,8 @@ namespace Crowd.Game
             Application.targetFrameRate = 60;
 
             Debug.Log($"Server opened: {IPAddress.Any}");
-            Ready.Value = new bool[10];
-            Ready.Where(arr => arr.All(_ => _)).Subscribe(_ => ClientReady()).AddTo(gameObject);
+            Ready.Value = new BitArray(10, false);
+            Ready.Where(arr => arr.Cast<bool>().All(_ => _)).Subscribe(_ => ClientReady()).AddTo(gameObject);
 
             listener.Start();
 
@@ -46,6 +47,7 @@ namespace Crowd.Game
                 {
                     if (clients[i] is null)
                     {
+                        Debug.Log($"New client accepted/ IP: {(client.Client.RemoteEndPoint as IPEndPoint).Address}, Port: {(client.Client.RemoteEndPoint as IPEndPoint).Port}");
                         clients[i] = client;
                         clientCount++;
                         clientIdx = i;
@@ -67,7 +69,9 @@ namespace Crowd.Game
                     switch((RequireType)type)
                     {
                         case RequireType.Ready:
-                            var newArr = (bool[])Ready.Value.Clone();
+                            ims.Read(out string name);
+                            players[i] = new Player(name);
+                            var newArr = (BitArray)Ready.Value.Clone();
                             newArr[i] = true;
                             Ready.Value = newArr;
                             break;
@@ -86,6 +90,8 @@ namespace Crowd.Game
             {
                 var oms = new OutputMemoryStream();
                 oms.Write((int)RequireType.Ready);
+                foreach(var player in players)
+                    oms.Write(player.Nickname);
                 client.Client.Send(oms.buffer);
             });
     }
