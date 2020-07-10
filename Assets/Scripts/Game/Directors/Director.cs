@@ -16,11 +16,13 @@ namespace Crowd.Game
             instance = this;
             DontDestroyOnLoad(gameObject);
 
+            
             directorsPool = Instantiate(Resources.Load("Prefabs/DirectorsPool") as GameObject).GetComponent<DirectorsPool>();
         }
 
         private void Start()
         {
+            GetSubDirector<GameLiftDirector>();
             GetSubDirector<GameDirector>();
         }
 
