@@ -19,7 +19,7 @@ namespace Crowd
         private List<SerializeInfo> poolSerializeList;
         protected Dictionary<string, List<GameObject>> poolDictionary = new Dictionary<string, List<GameObject>>();
 
-        private void Awake()
+        protected void Awake()
         {
             Initialize();
         }

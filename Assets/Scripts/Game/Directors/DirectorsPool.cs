@@ -4,6 +4,11 @@ namespace Crowd.Game
 {
     public class DirectorsPool: ObjectPool
     {
+        protected void Awake()
+        {
+            base.Awake();
+            DontDestroyOnLoad(gameObject);
+        }
         private new void Use<T>() { }
 
         public T UseDirector<T>() where T: SubDirector
