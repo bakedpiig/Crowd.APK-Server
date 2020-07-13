@@ -5,10 +5,11 @@ using System.Net;
 using System.Net.Sockets;
 using UniRx;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Crowd.Game
 {
-    public class GameDirector : SubDirector
+    public partial class GameDirector : SubDirector
     {
         private TcpListener listener = new TcpListener(IPAddress.Any, 1935);
         private TcpClient[] clients = new TcpClient[10];
@@ -23,7 +24,15 @@ namespace Crowd.Game
 
             Debug.Log($"Server opened: {IPAddress.Any}");
             Ready.Value = new BitArray(10, false);
-            Ready.Where(arr => arr.Cast<bool>().All(_ => _)).Subscribe(_ => ClientReady()).AddTo(gameObject);
+
+            var async = SceneManager.LoadSceneAsync("MainScene");
+            async.completed += _ => Debug.Log(GetNewCharacterPosition());
+
+            Ready.Where(arr => arr.Cast<bool>().All(_ => _)).Subscribe(_ =>
+            {
+                SceneManager.LoadScene("MainScene");
+                ClientReady();
+            }).AddTo(gameObject);
 
             listener.Start();
 
