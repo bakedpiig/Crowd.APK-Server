@@ -1,11 +1,13 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Crowd.Game
 {
 	public partial class GameDirector
 	{
 		private readonly int MapSize = 500;
-		private Ray ray;
+		private Dictionary<(int, int), bool> canConstruct = new Dictionary<(int, int), bool>();
+		private Ray ray = new Ray();
 		private RaycastHit hit;
 
 		private Vector2 GetNewCharacterPosition()
@@ -14,15 +16,17 @@ namespace Crowd.Game
 			while (result == default)
 			{
 				int x = Random.Range(-MapSize / 2, MapSize / 2);
-				int z = Random.Range(-MapSize / 2, MapSize / 2);
+				int y = Random.Range(-MapSize / 2, MapSize / 2);
 
-				ray = new Ray();
-				ray.origin = new Vector3(x, 100, z);
-				ray.direction = Vector3.down;
-
-				Physics.Raycast(ray, out hit);
-				if (!(hit.collider is null) && hit.collider.gameObject.CompareTag("Bottom"))
-					result = new Vector2(x, z);
+				if (canConstruct.ContainsKey((x, y)) && canConstruct[(x, y)])
+					result = new Vector2(x, y);
+				else
+				{
+					ray.origin = new Vector3(x, 100, y);
+					ray.direction = Vector3.down;
+					Physics.Raycast(ray, out hit);
+					canConstruct.Add((x, y), hit.collider.gameObject.CompareTag("Bottom"));
+				}
 			}
 
 			return result;
