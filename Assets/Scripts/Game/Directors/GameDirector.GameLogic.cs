@@ -7,6 +7,7 @@ namespace Crowd.Game
 	{
 		private readonly int MapSize = 500;
 		private Dictionary<(int, int), bool> canConstruct = new Dictionary<(int, int), bool>();
+		private Dictionary<int, Character> characterDictionary = new Dictionary<int, Character>();
 		private Ray ray = new Ray();
 		private RaycastHit hit;
 
